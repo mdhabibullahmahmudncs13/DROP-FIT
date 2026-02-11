@@ -1,9 +1,16 @@
-import { ID } from 'appwrite';
+import { ID, Query } from 'appwrite';
 import { account, databases, DATABASE_ID, USERS_COLLECTION_ID } from './client';
 import { AuthUser, LoginData, SignupData } from '@/types/user';
 
 export async function signup(data: SignupData): Promise<AuthUser> {
   try {
+    // Delete any existing session first
+    try {
+      await account.deleteSession('current');
+    } catch {
+      // No active session, continue
+    }
+
     // Create Appwrite auth account
     const response = await account.create(
       ID.unique(),
@@ -14,6 +21,9 @@ export async function signup(data: SignupData): Promise<AuthUser> {
 
     // Create session
     await account.createEmailPasswordSession(data.email, data.password);
+
+    // Determine if user should be admin (you can change this logic)
+    const isAdmin = data.email === 'admin@dropfit.com'; // Change to your admin email
 
     // Create user document in users collection
     await databases.createDocument(
@@ -28,6 +38,7 @@ export async function signup(data: SignupData): Promise<AuthUser> {
         address: data.address || '',
         city: data.city || '',
         postalCode: '',
+        role: isAdmin ? 'admin' : 'user',
       }
     );
 
@@ -35,6 +46,7 @@ export async function signup(data: SignupData): Promise<AuthUser> {
       $id: response.$id,
       name: response.name,
       email: response.email,
+      role: isAdmin ? 'admin' : 'user',
     };
   } catch (error) {
     console.error('Signup error:', error);
@@ -44,13 +56,29 @@ export async function signup(data: SignupData): Promise<AuthUser> {
 
 export async function login(data: LoginData): Promise<AuthUser> {
   try {
+    // Delete any existing session first
+    try {
+      await account.deleteSession('current');
+    } catch {
+      // No active session, continue
+    }
+
     const session = await account.createEmailPasswordSession(data.email, data.password);
     const user = await account.get();
+
+    // Get user role from database
+    const userDocs = await databases.listDocuments(
+      DATABASE_ID,
+      USERS_COLLECTION_ID,
+      [Query.equal('user_id', user.$id)]
+    );
+    const role = userDocs.documents[0]?.role || 'user';
 
     return {
       $id: user.$id,
       name: user.name,
       email: user.email,
+      role: role as 'user' | 'admin',
     };
   } catch (error) {
     console.error('Login error:', error);
@@ -70,10 +98,20 @@ export async function logout(): Promise<void> {
 export async function getCurrentUser(): Promise<AuthUser | null> {
   try {
     const user = await account.get();
+    
+    // Get user role from database
+    const userDocs = await databases.listDocuments(
+      DATABASE_ID,
+      USERS_COLLECTION_ID,
+      [Query.equal('user_id', user.$id)]
+    );
+    const role = userDocs.documents[0]?.role || 'user';
+    
     return {
       $id: user.$id,
       name: user.name,
       email: user.email,
+      role: role as 'user' | 'admin',
     };
   } catch (error) {
     return null;

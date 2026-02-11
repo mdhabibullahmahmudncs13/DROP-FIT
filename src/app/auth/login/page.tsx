@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { login } from '@/lib/appwrite/auth';
@@ -11,10 +11,17 @@ import Button from '@/components/ui/Button';
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login: setUser } = useAuth();
+  const { user, login: setUser } = useAuth();
   const { showToast } = useToast();
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [loading, setLoading] = useState(false);
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (user) {
+      router.push('/account');
+    }
+  }, [user, router]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();

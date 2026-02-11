@@ -27,8 +27,9 @@ export default function TrackOrderPage() {
     'orders',
     orderId,
     (payload) => {
-      if (payload.status && order) {
-        setOrder({ ...order, status: payload.status });
+      const data = payload as Partial<Order>;
+      if (data.status && order) {
+        setOrder({ ...order, status: data.status });
       }
     }
   );
@@ -69,7 +70,12 @@ export default function TrackOrderPage() {
   }
 
   const items: OrderItem[] = JSON.parse(order.items);
-  const shippingInfo = JSON.parse(order.shipping_info);
+  const shippingInfo = {
+    name: order.shipping_name,
+    phone: order.shipping_phone,
+    address: order.shipping_address,
+    city: order.shipping_city,
+  };
 
   const getStatusVariant = (status: string) => {
     switch (status) {
@@ -170,13 +176,11 @@ export default function TrackOrderPage() {
           <h3 className="text-xl font-bold text-text-primary mb-4">Shipping Information</h3>
           <div className="space-y-2 text-text-secondary">
             <p>
-              <span className="font-semibold text-text-primary">{shippingInfo.fullName}</span>
+              <span className="font-semibold text-text-primary">{shippingInfo.name}</span>
             </p>
             <p>{shippingInfo.phone}</p>
             <p>{shippingInfo.address}</p>
-            <p>
-              {shippingInfo.city}, {shippingInfo.postalCode}
-            </p>
+            <p>{shippingInfo.city}</p>
           </div>
         </div>
 
@@ -219,9 +223,9 @@ export default function TrackOrderPage() {
               className="flex items-center gap-4 pb-4 border-b border-border last:border-0 last:pb-0"
             >
               <div className="flex-1">
-                <p className="font-semibold text-text-primary">{item.name}</p>
+                <p className="font-semibold text-text-primary">{item.title}</p>
                 <p className="text-sm text-text-muted">
-                  Size: {item.size} | Qty: {item.quantity}
+                  Size: {item.size} | Qty: {item.qty}
                 </p>
               </div>
               <p className="font-bold text-text-primary">{formatPrice(item.price)}</p>

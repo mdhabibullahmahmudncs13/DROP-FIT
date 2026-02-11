@@ -68,9 +68,13 @@ You need to create 6 collections. For each collection:
 | `user_id` | String | 255 | Yes | No | - |
 | `items` | String | 10000 | Yes | No | - |
 | `total_amount` | Integer | - | Yes | No | - |
-| `shipping_info` | String | 2000 | Yes | No | - |
 | `status` | String | 50 | Yes | No | pending |
+| `shipping_name` | String | 255 | Yes | No | - |
+| `shipping_phone` | String | 50 | Yes | No | - |
+| `shipping_address` | String | 500 | Yes | No | - |
+| `shipping_city` | String | 100 | Yes | No | - |
 | `payment_method` | String | 50 | Yes | No | cod |
+| `notes` | String | 1000 | No | No | - |
 | `created_at` | DateTime | - | Yes | No | - |
 
 **Indexes:**
@@ -82,6 +86,8 @@ You need to create 6 collections. For each collection:
 - Read access: Users (users can read their own orders)
 - Create: Users
 - Update: Users (for admins only in production)
+
+**Note:** The `items` field stores a JSON string array of OrderItem objects. Each OrderItem contains: `product_id`, `title`, `size`, `qty`, and `price`.
 
 ---
 
@@ -100,10 +106,12 @@ You need to create 6 collections. For each collection:
 | `address` | String | 500 | No | No | - |
 | `city` | String | 100 | No | No | - |
 | `postalCode` | String | 20 | No | No | - |
+| `role` | String | 20 | Yes | No | user |
 
 **Indexes:**
 - `user_id` - Key: `user_id`, Type: Unique, Attributes: `user_id`
 - `email` - Key: `email`, Type: Key, Attributes: `email`
+- `role` - Key: `role`, Type: Key, Attributes: `role`
 
 **Permissions:**
 - Read: Users (users can read their own profile)

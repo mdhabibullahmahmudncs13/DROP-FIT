@@ -87,18 +87,18 @@ export default function MobileNav({ isOpen, onClose, navLinks }: MobileNavProps)
             {user ? (
               <>
                 <Link
-                  href="/account"
+                  href="/account/profile"
                   onClick={onClose}
                   className="block px-4 py-3 text-text-primary hover:bg-background-hover rounded-lg transition-colors"
                 >
-                  My Account
+                  Profile
                 </Link>
                 <Link
                   href="/account/orders"
                   onClick={onClose}
                   className="block px-4 py-3 text-text-primary hover:bg-background-hover rounded-lg transition-colors"
                 >
-                  My Orders
+                  Orders
                 </Link>
                 <button
                   onClick={handleLogout}
