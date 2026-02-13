@@ -107,11 +107,22 @@ export default function ProductForm({ product, onSubmit, onCancel }: ProductForm
   };
 
   const addSize = () => {
-    if (sizeInput.trim() && !formData.sizes.includes(sizeInput.trim().toUpperCase())) {
+    if (!sizeInput.trim()) return;
+
+    // Split by comma, space, or both and clean up
+    const sizesToAdd = sizeInput
+      .split(/[,\s]+/)
+      .map(s => s.trim().toUpperCase())
+      .filter(s => s.length > 0 && !formData.sizes.includes(s));
+
+    if (sizesToAdd.length > 0) {
       setFormData({
         ...formData,
-        sizes: [...formData.sizes, sizeInput.trim().toUpperCase()],
+        sizes: [...formData.sizes, ...sizesToAdd],
       });
+      setSizeInput('');
+    } else if (sizeInput.trim()) {
+      // If no new sizes to add (all duplicates), just clear input
       setSizeInput('');
     }
   };
@@ -289,7 +300,16 @@ export default function ProductForm({ product, onSubmit, onCancel }: ProductForm
           ))}
         </div>
         {formData.images.length === 0 && (
-          <p className="text-sm text-text-muted mt-2">No images added yet</p>
+          <div className="bg-error bg-opacity-10 border border-error rounded-lg p-2 mt-2">
+            <p className="text-sm text-error font-medium">
+              ⚠️ Please upload at least one product image
+            </p>
+          </div>
+        )}
+        {formData.images.length > 0 && (
+          <p className="text-sm text-success mt-2">
+            ✓ {formData.images.length} image{formData.images.length > 1 ? 's' : ''} uploaded
+          </p>
         )}
       </div>
 
@@ -302,15 +322,25 @@ export default function ProductForm({ product, onSubmit, onCancel }: ProductForm
           <Input
             type="text"
             value={sizeInput}
-            onChange={(e) => setSizeInput(e.target.value)}
-            placeholder="Enter size (e.g., S, M, L, XL)"
-            onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addSize())}
+            onChange={(e) => setSizeInput(e.target.value.toUpperCase())}
+            placeholder="Enter size (e.g., S, M, L, XL) and press Enter"
+            onKeyPress={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                addSize();
+              }
+            }}
           />
-          <Button type="button" onClick={addSize} variant="secondary">
+          <Button 
+            type="button" 
+            onClick={addSize} 
+            variant="secondary"
+            disabled={!sizeInput.trim()}
+          >
             Add
           </Button>
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 mb-2">
           {formData.sizes.map((size) => (
             <span
               key={size}
@@ -328,7 +358,16 @@ export default function ProductForm({ product, onSubmit, onCancel }: ProductForm
           ))}
         </div>
         {formData.sizes.length === 0 && (
-          <p className="text-sm text-text-muted mt-2">No sizes added yet</p>
+          <div className="bg-error bg-opacity-10 border border-error rounded-lg p-2">
+            <p className="text-sm text-error font-medium">
+              ⚠️ Please add at least one size by clicking the "Add" button or pressing Enter
+            </p>
+          </div>
+        )}
+        {formData.sizes.length > 0 && (
+          <p className="text-sm text-success">
+            ✓ {formData.sizes.length} size{formData.sizes.length > 1 ? 's' : ''} added
+          </p>
         )}
       </div>
 
@@ -361,13 +400,40 @@ export default function ProductForm({ product, onSubmit, onCancel }: ProductForm
       )}
 
       {/* Actions */}
-      <div className="flex justify-end gap-3 pt-4 border-t border-border">
-        <Button type="button" onClick={onCancel} variant="secondary" disabled={loading}>
-          Cancel
-        </Button>
-        <Button type="submit" disabled={loading || formData.images.length === 0 || formData.sizes.length === 0}>
-          {loading ? 'Saving...' : product ? 'Update Product' : 'Create Product'}
-        </Button>
+      <div className="pt-4 border-t border-border">
+        {/* Validation Summary */}
+        {(formData.images.length === 0 || formData.sizes.length === 0) && (
+          <div className="bg-warning bg-opacity-10 border border-warning rounded-lg p-3 mb-4">
+            <p className="text-sm font-semibold text-warning mb-2">
+              Cannot create product - Missing required fields:
+            </p>
+            <ul className="text-sm text-warning space-y-1 ml-4">
+              {formData.images.length === 0 && (
+                <li>• Upload at least one product image</li>
+              )}
+              {formData.sizes.length === 0 && (
+                <li>• Add at least one available size (click "Add" button after typing)</li>
+              )}
+            </ul>
+          </div>
+        )}
+
+        <div className="flex justify-end gap-3">
+          <Button type="button" onClick={onCancel} variant="secondary" disabled={loading}>
+            Cancel
+          </Button>
+          <Button 
+            type="submit" 
+            disabled={loading || formData.images.length === 0 || formData.sizes.length === 0}
+            title={
+              formData.images.length === 0 || formData.sizes.length === 0
+                ? 'Please add images and sizes before submitting'
+                : ''
+            }
+          >
+            {loading ? 'Saving...' : product ? 'Update Product' : 'Create Product'}
+          </Button>
+        </div>
       </div>
     </form>
   );
