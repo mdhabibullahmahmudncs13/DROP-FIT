@@ -110,3 +110,46 @@ export function debounce<T extends (...args: unknown[]) => unknown>(
 export function cn(...classes: (string | undefined | null | false)[]): string {
   return classes.filter(Boolean).join(' ');
 }
+
+/**
+ * Calculate delivery charge based on order total and location
+ * @param subtotal - The subtotal of the order
+ * @param city - Optional city for location-based pricing
+ * @returns The delivery charge amount
+ */
+export function calculateDeliveryCharge(subtotal: number, city?: string): number {
+  // Free delivery for orders above 2000
+  if (subtotal >= 2000) {
+    return 0;
+  }
+
+  // Base delivery charge
+  const baseCharge = 60;
+
+  // Additional charge for remote areas (example cities)
+  const remoteAreas = ['sylhet', 'chittagong', 'khulna', 'rajshahi', 'rangpur', 'barisal', 'mymensingh'];
+  
+  if (city && remoteAreas.some(area => city.toLowerCase().includes(area))) {
+    return baseCharge + 40; // 100 taka for remote areas
+  }
+
+  return baseCharge;
+}
+
+/**
+ * Calculate order total including delivery charge
+ * @param subtotal - The subtotal of items
+ * @param city - Optional city for delivery calculation
+ * @returns Object with subtotal, delivery charge, and total
+ */
+export function calculateOrderTotal(subtotal: number, city?: string) {
+  const deliveryCharge = calculateDeliveryCharge(subtotal, city);
+  const total = subtotal + deliveryCharge;
+
+  return {
+    subtotal,
+    deliveryCharge,
+    total,
+    freeDeliveryEligible: subtotal >= 2000,
+  };
+}

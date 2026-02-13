@@ -16,6 +16,19 @@ export interface CreateProductData {
 
 export async function createProduct(data: CreateProductData): Promise<Product> {
   try {
+    // Validate required fields
+    if (!data.title || !data.description || !data.price) {
+      throw new Error('Title, description, and price are required');
+    }
+
+    if (!data.images || data.images.length === 0) {
+      throw new Error('At least one image is required');
+    }
+
+    if (!data.sizes || data.sizes.length === 0) {
+      throw new Error('At least one size is required');
+    }
+
     // Generate slug from title
     const slug = data.title
       .toLowerCase()
@@ -40,9 +53,19 @@ export async function createProduct(data: CreateProductData): Promise<Product> {
       }
     );
     return response as unknown as Product;
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error creating product:', error);
-    throw error;
+    
+    // Provide more specific error messages
+    if (error.code === 401) {
+      throw new Error('Unauthorized. Please check your Appwrite permissions.');
+    } else if (error.code === 404) {
+      throw new Error('Collection not found. Please verify your Appwrite setup.');
+    } else if (error.message) {
+      throw new Error(error.message);
+    }
+    
+    throw new Error('Failed to create product. Please try again.');
   }
 }
 

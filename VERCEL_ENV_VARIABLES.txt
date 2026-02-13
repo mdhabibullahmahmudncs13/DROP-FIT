@@ -1,0 +1,32 @@
+# Copy these EXACT values to Vercel Environment Variables
+# Go to: Vercel Dashboard → Your Project → Settings → Environment Variables
+
+NEXT_PUBLIC_APPWRITE_ENDPOINT=https://cloud.appwrite.io/v1
+NEXT_PUBLIC_APPWRITE_PROJECT_ID=698243f1003e10aaa472
+NEXT_PUBLIC_DATABASE_ID=69824479002438e26766
+NEXT_PUBLIC_PRODUCTS_COLLECTION_ID=products
+NEXT_PUBLIC_USERS_COLLECTION_ID=users
+NEXT_PUBLIC_ORDERS_COLLECTION_ID=orders
+NEXT_PUBLIC_DROPS_COLLECTION_ID=drops
+NEXT_PUBLIC_NOTIFY_COLLECTION_ID=notify_me
+NEXT_PUBLIC_COMMUNITY_COLLECTION_ID=community_posts
+NEXT_PUBLIC_STORAGE_BUCKET_ID=69832327002c569df714
+
+# Optional: Cloudinary (update with your actual values if you have them)
+NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
+
+# Optional: SendGrid (update with your actual values if you have them)
+SENDGRID_API_KEY=your_api_key
+SENDGRID_FROM_EMAIL=no-reply@dropfit.com
+
+# IMPORTANT: For each variable above:
+# 1. Copy the variable name (e.g., NEXT_PUBLIC_APPWRITE_ENDPOINT)
+# 2. Copy the value (e.g., https://cloud.appwrite.io/v1)
+# 3. In Vercel, click "Add New" → paste name → paste value
+# 4. Select "Production", "Preview", and "Development" checkboxes
+# 5. Click "Save"
+# 6. Repeat for ALL variables above
+#
+# After adding all variables, go to Deployments and click "Redeploy"

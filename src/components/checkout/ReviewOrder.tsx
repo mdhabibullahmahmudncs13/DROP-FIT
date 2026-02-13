@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import { CartItem } from '@/types/order';
 import { ShippingInfo } from '@/types/order';
-import { formatPrice } from '@/lib/utils';
+import { formatPrice, calculateOrderTotal } from '@/lib/utils';
 import Button from '@/components/ui/Button';
 
 interface ReviewOrderProps {
@@ -23,6 +23,9 @@ export default function ReviewOrder({
   onBack,
   loading = false,
 }: ReviewOrderProps) {
+  // Calculate delivery charge and order total
+  const orderCalculation = calculateOrderTotal(total, shipping.city);
+
   return (
     <div className="space-y-6">
       {/* Order Items */}
@@ -116,10 +119,50 @@ export default function ReviewOrder({
       </div>
 
       {/* Total */}
-      <div className="bg-background-surface rounded-lg p-4 border border-border">
+      <div className="bg-background-surface rounded-lg p-4 border border-border space-y-3">
+        {/* Subtotal */}
+        <div className="flex items-center justify-between text-text-primary">
+          <span>Subtotal</span>
+          <span className="font-semibold">{formatPrice(orderCalculation.subtotal)}</span>
+        </div>
+
+        {/* Delivery Charge */}
+        <div className="flex items-center justify-between text-text-primary">
+          <span>Delivery Charge</span>
+          <span className="font-semibold">
+            {orderCalculation.deliveryCharge === 0 ? (
+              <span className="text-success">FREE</span>
+            ) : (
+              <>{formatPrice(orderCalculation.deliveryCharge)}</>
+            )}
+          </span>
+        </div>
+
+        {/* Free Delivery Message */}
+        {orderCalculation.freeDeliveryEligible && (
+          <div className="bg-success bg-opacity-10 border border-success rounded-lg p-2">
+            <p className="text-xs text-success font-medium text-center">
+              🎉 You've earned FREE delivery!
+            </p>
+          </div>
+        )}
+
+        {/* Add note for free delivery threshold if not met */}
+        {!orderCalculation.freeDeliveryEligible && orderCalculation.subtotal < 2000 && (
+          <div className="bg-primary bg-opacity-10 border border-primary rounded-lg p-2">
+            <p className="text-xs text-primary font-medium text-center">
+              Add {formatPrice(2000 - orderCalculation.subtotal)} more for FREE delivery!
+            </p>
+          </div>
+        )}
+
+        {/* Divider */}
+        <div className="border-t border-border"></div>
+
+        {/* Final Total */}
         <div className="flex items-center justify-between text-2xl font-bold">
           <span className="text-text-primary">Total</span>
-          <span className="text-primary">{formatPrice(total)}</span>
+          <span className="text-primary">{formatPrice(orderCalculation.total)}</span>
         </div>
       </div>
 

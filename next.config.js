@@ -12,6 +12,11 @@ const nextConfig = {
         hostname: 'cloud.appwrite.io',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+        pathname: '/**',
+      },
     ],
   },
   reactStrictMode: true,

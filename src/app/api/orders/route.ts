@@ -4,6 +4,7 @@ import { createOrder } from '@/lib/appwrite/orders';
 import { getCurrentUser } from '@/lib/appwrite/auth';
 import { sendOrderConfirmationEmail } from '@/lib/sendgrid';
 import { OrderItem } from '@/types/order';
+import { calculateOrderTotal } from '@/lib/utils';
 
 export async function POST(request: NextRequest) {
   try {
@@ -25,9 +26,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid shipping information' }, { status: 400 });
     }
 
-    // Verify stock and calculate total
+    // Verify stock and calculate subtotal
     const orderItems: OrderItem[] = [];
-    let total = 0;
+    let subtotal = 0;
 
     for (const item of items) {
       const product = await getProductById(item.product_id);
@@ -54,14 +55,17 @@ export async function POST(request: NextRequest) {
         price: item.price,
       });
 
-      total += item.price * item.quantity;
+      subtotal += item.price * item.quantity;
     }
+
+    // Calculate delivery charge and total
+    const orderCalculation = calculateOrderTotal(subtotal, shipping.city);
 
     // Create order
     const order = await createOrder({
       user_id: user.$id,
       items: orderItems,
-      total_amount: total,
+      total_amount: orderCalculation.total,
       shipping,
     });
 
@@ -79,7 +83,7 @@ export async function POST(request: NextRequest) {
         orderId: order.$id,
         name: shipping.name,
         items: orderItems,
-        total,
+        total: orderCalculation.total,
         address: shipping.address,
         city: shipping.city,
       });

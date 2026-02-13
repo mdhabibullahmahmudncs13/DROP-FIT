@@ -4,6 +4,7 @@ import { useState, FormEvent } from 'react';
 import { Product, Collection } from '@/types/product';
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
+import { uploadProductImage } from '@/lib/appwrite/storage';
 
 interface ProductFormProps {
   product?: Product;
@@ -25,6 +26,7 @@ export interface ProductFormData {
 
 export default function ProductForm({ product, onSubmit, onCancel }: ProductFormProps) {
   const [loading, setLoading] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [formData, setFormData] = useState<ProductFormData>({
     title: product?.title || '',
     description: product?.description || '',
@@ -38,6 +40,7 @@ export default function ProductForm({ product, onSubmit, onCancel }: ProductForm
   });
   const [imageInput, setImageInput] = useState('');
   const [sizeInput, setSizeInput] = useState('');
+  const [uploadError, setUploadError] = useState('');
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -48,6 +51,44 @@ export default function ProductForm({ product, onSubmit, onCancel }: ProductForm
       console.error('Error submitting form:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    setUploadingImage(true);
+    setUploadError('');
+
+    try {
+      const uploadPromises = Array.from(files).map(async (file) => {
+        // Validate file size (max 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+          throw new Error(`${file.name} exceeds 5MB limit`);
+        }
+
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+          throw new Error(`${file.name} is not an image`);
+        }
+
+        const imageUrl = await uploadProductImage(file);
+        return imageUrl;
+      });
+
+      const uploadedUrls = await Promise.all(uploadPromises);
+      setFormData({ 
+        ...formData, 
+        images: [...formData.images, ...uploadedUrls] 
+      });
+    } catch (error) {
+      console.error('Error uploading images:', error);
+      setUploadError(error instanceof Error ? error.message : 'Failed to upload images');
+    } finally {
+      setUploadingImage(false);
+      // Reset input
+      e.target.value = '';
     }
   };
 
@@ -107,10 +148,14 @@ export default function ProductForm({ product, onSubmit, onCancel }: ProductForm
           value={formData.description}
           onChange={(e) => setFormData({ ...formData, description: e.target.value })}
           placeholder="Enter product description"
-          className="w-full px-4 py-3 bg-background-card border border-border rounded-lg focus:outline-none focus:border-primary text-text-primary resize-none"
+          className="w-full px-4 py-3 bg-background-card border border-border rounded-lg focus:outline-none focus:border-primary text-text-primary resize-vertical"
           rows={4}
           required
+          maxLength={1000}
         />
+        <p className="text-xs text-text-muted mt-1">
+          {formData.description.length}/1000 characters
+        </p>
       </div>
 
       {/* Price and Stock */}
@@ -121,10 +166,21 @@ export default function ProductForm({ product, onSubmit, onCancel }: ProductForm
           </label>
           <Input
             type="number"
-            value={formData.price}
-            onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })}
+            value={formData.price || ''}
+            onChange={(e) => {
+              const value = e.target.value;
+              // Remove leading zeros and convert to number
+              const numValue = value === '' ? 0 : parseInt(value.replace(/^0+/, '') || '0', 10);
+              setFormData({ ...formData, price: numValue });
+            }}
+            onBlur={(e) => {
+              // Ensure we have a valid number on blur
+              const numValue = parseInt(e.target.value) || 0;
+              setFormData({ ...formData, price: numValue });
+            }}
             placeholder="0"
             min="0"
+            step="1"
             required
           />
         </div>
@@ -134,10 +190,19 @@ export default function ProductForm({ product, onSubmit, onCancel }: ProductForm
           </label>
           <Input
             type="number"
-            value={formData.stock}
-            onChange={(e) => setFormData({ ...formData, stock: Number(e.target.value) })}
+            value={formData.stock || ''}
+            onChange={(e) => {
+              const value = e.target.value;
+              const numValue = value === '' ? 0 : parseInt(value.replace(/^0+/, '') || '0', 10);
+              setFormData({ ...formData, stock: numValue });
+            }}
+            onBlur={(e) => {
+              const numValue = parseInt(e.target.value) || 0;
+              setFormData({ ...formData, stock: numValue });
+            }}
             placeholder="0"
             min="0"
+            step="1"
             required
           />
         </div>
@@ -165,17 +230,46 @@ export default function ProductForm({ product, onSubmit, onCancel }: ProductForm
         <label className="block text-sm font-semibold text-text-primary mb-2">
           Product Images *
         </label>
-        <div className="flex gap-2 mb-2">
+        
+        {/* File Upload */}
+        <div className="mb-3">
+          <label className="block w-full">
+            <div className={`flex items-center justify-center gap-2 px-4 py-3 bg-background-card border-2 border-dashed ${uploadingImage ? 'border-primary' : 'border-border'} rounded-lg cursor-pointer hover:border-primary transition-colors`}>
+              <svg className="w-5 h-5 text-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+              </svg>
+              <span className="text-text-secondary font-medium">
+                {uploadingImage ? 'Uploading...' : 'Click to upload images'}
+              </span>
+              <span className="text-xs text-text-muted">(Max 5MB each)</span>
+            </div>
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={handleFileUpload}
+              disabled={uploadingImage}
+              className="hidden"
+            />
+          </label>
+          {uploadError && (
+            <p className="text-sm text-error mt-2">{uploadError}</p>
+          )}
+        </div>
+
+        {/* URL Input (Optional) */}
+        <div className="flex gap-2 mb-3">
           <Input
             type="url"
             value={imageInput}
             onChange={(e) => setImageInput(e.target.value)}
-            placeholder="Enter image URL"
+            placeholder="Or enter image URL"
           />
           <Button type="button" onClick={addImage} variant="secondary">
             Add
           </Button>
         </div>
+
         <div className="flex flex-wrap gap-2">
           {formData.images.map((img, index) => (
             <div key={index} className="relative group">
