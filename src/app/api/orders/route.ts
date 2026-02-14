@@ -5,6 +5,7 @@ import { getCurrentUser } from '@/lib/appwrite/auth';
 import { sendOrderConfirmationEmail } from '@/lib/sendgrid';
 import { OrderItem } from '@/types/order';
 import { calculateOrderTotal } from '@/lib/utils';
+import { getDeliverySettings } from '@/lib/appwrite/settings';
 
 export async function POST(request: NextRequest) {
   try {
@@ -59,7 +60,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Calculate delivery charge and total
-    const orderCalculation = calculateOrderTotal(subtotal, shipping.city);
+    const deliverySettings = await getDeliverySettings();
+    const orderCalculation = calculateOrderTotal(subtotal, shipping.city, deliverySettings);
 
     // Create order
     const order = await createOrder({

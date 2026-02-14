@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useCart } from '@/hooks/useCart';
+import { useDeliverySettings } from '@/hooks/useDeliverySettings';
 import { formatPrice, calculateDeliveryCharge } from '@/lib/utils';
 import Button from '@/components/ui/Button';
 
@@ -11,7 +12,9 @@ interface CartSummaryProps {
 
 export default function CartSummary({ onCheckoutClick }: CartSummaryProps) {
   const { items, total } = useCart();
-  const estimatedDelivery = calculateDeliveryCharge(total);
+  const { settings } = useDeliverySettings();
+  const estimatedDelivery = calculateDeliveryCharge(total, undefined, settings);
+  const freeDeliveryThreshold = settings.freeDeliveryThreshold;
 
   return (
     <div className="space-y-4">
@@ -34,15 +37,15 @@ export default function CartSummary({ onCheckoutClick }: CartSummaryProps) {
       </div>
 
       {/* Free Delivery Notice */}
-      {total < 2000 && (
+      {total < freeDeliveryThreshold && (
         <div className="bg-primary bg-opacity-10 border border-primary rounded-lg p-2">
           <p className="text-xs text-primary font-medium text-center">
-            Add {formatPrice(2000 - total)} more for FREE delivery! 🚚
+            Add {formatPrice(freeDeliveryThreshold - total)} more for FREE delivery! 🚚
           </p>
         </div>
       )}
 
-      {total >= 2000 && (
+      {total >= freeDeliveryThreshold && (
         <div className="bg-success bg-opacity-10 border border-success rounded-lg p-2">
           <p className="text-xs text-success font-medium text-center">
             🎉 You've earned FREE delivery!

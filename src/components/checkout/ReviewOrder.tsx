@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { CartItem } from '@/types/order';
 import { ShippingInfo } from '@/types/order';
 import { formatPrice, calculateOrderTotal } from '@/lib/utils';
+import { useDeliverySettings } from '@/hooks/useDeliverySettings';
 import Button from '@/components/ui/Button';
 
 interface ReviewOrderProps {
@@ -23,8 +24,9 @@ export default function ReviewOrder({
   onBack,
   loading = false,
 }: ReviewOrderProps) {
-  // Calculate delivery charge and order total
-  const orderCalculation = calculateOrderTotal(total, shipping.city);
+  // Get delivery settings and calculate order total
+  const { settings } = useDeliverySettings();
+  const orderCalculation = calculateOrderTotal(total, shipping.city, settings);
 
   return (
     <div className="space-y-6">
@@ -148,10 +150,10 @@ export default function ReviewOrder({
         )}
 
         {/* Add note for free delivery threshold if not met */}
-        {!orderCalculation.freeDeliveryEligible && orderCalculation.subtotal < 2000 && (
+        {!orderCalculation.freeDeliveryEligible && orderCalculation.subtotal < settings.freeDeliveryThreshold && (
           <div className="bg-primary bg-opacity-10 border border-primary rounded-lg p-2">
             <p className="text-xs text-primary font-medium text-center">
-              Add {formatPrice(2000 - orderCalculation.subtotal)} more for FREE delivery!
+              Add {formatPrice(settings.freeDeliveryThreshold - orderCalculation.subtotal)} more for FREE delivery!
             </p>
           </div>
         )}

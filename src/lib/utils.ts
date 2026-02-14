@@ -115,22 +115,38 @@ export function cn(...classes: (string | undefined | null | false)[]): string {
  * Calculate delivery charge based on order total and location
  * @param subtotal - The subtotal of the order
  * @param city - Optional city for location-based pricing
+ * @param settings - Optional delivery settings (if not provided, uses defaults)
  * @returns The delivery charge amount
  */
-export function calculateDeliveryCharge(subtotal: number, city?: string): number {
-  // Free delivery for orders above 2000
-  if (subtotal >= 2000) {
+export function calculateDeliveryCharge(
+  subtotal: number, 
+  city?: string,
+  settings?: {
+    baseCharge: number;
+    freeDeliveryThreshold: number;
+    remoteAreaCharge: number;
+    remoteAreas: string[];
+  }
+): number {
+  // Use provided settings or defaults
+  const config = settings || {
+    baseCharge: 60,
+    freeDeliveryThreshold: 2000,
+    remoteAreaCharge: 40,
+    remoteAreas: ['sylhet', 'chittagong', 'khulna', 'rajshahi', 'rangpur', 'barisal', 'mymensingh'],
+  };
+
+  // Free delivery for orders above threshold
+  if (subtotal >= config.freeDeliveryThreshold) {
     return 0;
   }
 
   // Base delivery charge
-  const baseCharge = 60;
+  const baseCharge = config.baseCharge;
 
-  // Additional charge for remote areas (example cities)
-  const remoteAreas = ['sylhet', 'chittagong', 'khulna', 'rajshahi', 'rangpur', 'barisal', 'mymensingh'];
-  
-  if (city && remoteAreas.some(area => city.toLowerCase().includes(area))) {
-    return baseCharge + 40; // 100 taka for remote areas
+  // Additional charge for remote areas
+  if (city && config.remoteAreas.some(area => city.toLowerCase().includes(area))) {
+    return baseCharge + config.remoteAreaCharge;
   }
 
   return baseCharge;
@@ -140,16 +156,26 @@ export function calculateDeliveryCharge(subtotal: number, city?: string): number
  * Calculate order total including delivery charge
  * @param subtotal - The subtotal of items
  * @param city - Optional city for delivery calculation
+ * @param settings - Optional delivery settings
  * @returns Object with subtotal, delivery charge, and total
  */
-export function calculateOrderTotal(subtotal: number, city?: string) {
-  const deliveryCharge = calculateDeliveryCharge(subtotal, city);
+export function calculateOrderTotal(
+  subtotal: number, 
+  city?: string,
+  settings?: {
+    baseCharge: number;
+    freeDeliveryThreshold: number;
+    remoteAreaCharge: number;
+    remoteAreas: string[];
+  }
+) {
+  const deliveryCharge = calculateDeliveryCharge(subtotal, city, settings);
   const total = subtotal + deliveryCharge;
 
   return {
     subtotal,
     deliveryCharge,
     total,
-    freeDeliveryEligible: subtotal >= 2000,
+    freeDeliveryEligible: subtotal >= (settings?.freeDeliveryThreshold || 2000),
   };
 }
