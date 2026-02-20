@@ -66,15 +66,15 @@ export default function AdminSidebar() {
   ];
 
   return (
-    <aside className="w-64 bg-background-surface border-r border-border min-h-screen">
-      <div className="p-6">
+    <aside className="w-64 bg-background-surface border-r border-border min-h-screen sticky top-0">
+      <div className="p-4 sm:p-6">
         <Link href="/admin" className="flex items-center gap-2">
-          <span className="text-2xl font-bold text-primary">DROP FIT</span>
-          <span className="text-sm text-text-muted">Admin</span>
+          <span className="text-xl sm:text-2xl font-bold text-primary">DROP FIT</span>
+          <span className="text-xs sm:text-sm text-text-muted">Admin</span>
         </Link>
       </div>
 
-      <nav className="px-4">
+      <nav className="px-3 sm:px-4">
         {navItems.map((item) => (
           <Link
             key={item.href}

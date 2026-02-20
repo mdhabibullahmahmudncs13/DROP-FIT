@@ -15,12 +15,12 @@ export default function ShopPage() {
   const { products, loading } = useProducts({ collection, priceSort, search });
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <h1 className="text-4xl font-bold text-text-primary mb-8">Shop All</h1>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12">
+      <h1 className="text-3xl sm:text-4xl font-bold text-text-primary mb-6 sm:mb-8">Shop All</h1>
 
       {/* Filters */}
-      <div className="bg-background-surface rounded-card border border-border p-4 mb-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="bg-background-surface rounded-card border border-border p-3 sm:p-4 mb-6 sm:mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
           {/* Search */}
           <Input
             type="text"
@@ -33,7 +33,7 @@ export default function ShopPage() {
           <select
             value={collection}
             onChange={(e) => setCollection(e.target.value as Collection | 'all')}
-            className="px-4 py-3 bg-background-surface text-text-primary border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+            className="px-4 py-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
           >
             <option value="all">All Collections</option>
             <option value="anime">Anime</option>
@@ -45,7 +45,7 @@ export default function ShopPage() {
           <select
             value={priceSort || ''}
             onChange={(e) => setPriceSort(e.target.value as 'asc' | 'desc' | undefined)}
-            className="px-4 py-3 bg-background-surface text-text-primary border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+            className="px-4 py-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
           >
             <option value="">Sort by Price</option>
             <option value="asc">Price: Low to High</option>

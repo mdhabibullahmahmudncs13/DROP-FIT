@@ -9,10 +9,10 @@ interface ProductGridProps {
 export default function ProductGrid({ products, emptyMessage }: ProductGridProps) {
   if (products.length === 0) {
     return (
-      <div className="text-center py-12">
+      <div className="text-center py-8 sm:py-12">
         <div className="mb-4">
           <svg
-            className="mx-auto h-24 w-24 text-text-muted"
+            className="mx-auto h-16 w-16 sm:h-24 sm:w-24 text-text-muted"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -25,10 +25,10 @@ export default function ProductGrid({ products, emptyMessage }: ProductGridProps
             />
           </svg>
         </div>
-        <h3 className="text-xl font-semibold text-text-primary mb-2">
+        <h3 className="text-lg sm:text-xl font-semibold text-text-primary mb-2">
           {emptyMessage || 'No products found'}
         </h3>
-        <p className="text-text-secondary">
+        <p className="text-sm sm:text-base text-text-secondary px-4">
           Check back later for new drops or explore other collections.
         </p>
       </div>
@@ -36,7 +36,7 @@ export default function ProductGrid({ products, emptyMessage }: ProductGridProps
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
       {products.map((product) => (
         <ProductCard key={product.$id} product={product} />
       ))}

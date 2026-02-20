@@ -102,9 +102,9 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <h1 className="text-4xl font-bold text-text-primary mb-2">Checkout</h1>
-      <p className="text-text-secondary mb-8">Complete your order</p>
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12">
+      <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-text-primary mb-2">Checkout</h1>
+      <p className="text-sm sm:text-base text-text-secondary mb-6 sm:mb-8">Complete your order</p>
 
       <ProgressBar currentStep={step} steps={steps} />
 

@@ -14,6 +14,11 @@ export const metadata: Metadata = {
   title: 'Drop Fit - Anime & Series Streetwear',
   description: 'Where fandom meets fashion. Limited-edition anime and series streetwear that lets you wear your passion.',
   keywords: 'anime, streetwear, limited edition, drops, t-shirts, fashion, fandom',
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 5,
+  },
 };
 
 export default function RootLayout({

@@ -31,10 +31,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     <AdminGuard>
       <ToastContext.Provider value={toast}>
         <div className="flex min-h-screen bg-background">
-          <AdminSidebar />
-          <div className="flex-1">
+          {/* Sidebar - hidden on mobile, shown on desktop */}
+          <div className="hidden lg:block">
+            <AdminSidebar />
+          </div>
+          <div className="flex-1 w-full lg:w-auto">
             <AdminHeader />
-            <main className="p-8">{children}</main>
+            <main className="p-4 sm:p-6 lg:p-8">{children}</main>
           </div>
         </div>
         <ToastContainer toasts={toast.toasts} onRemove={toast.removeToast} />

@@ -56,11 +56,11 @@ export default function ProductDetail({ product }: ProductDetailProps) {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12">
       {/* Images */}
       <div>
         {/* Main Image */}
-        <div className="relative aspect-[3/4] mb-4 rounded-card overflow-hidden bg-background-hover">
+        <div className="relative aspect-[3/4] mb-3 sm:mb-4 rounded-card overflow-hidden bg-background-hover">
           <Image
             src={product.images[selectedImage]}
             alt={product.title}
@@ -73,12 +73,12 @@ export default function ProductDetail({ product }: ProductDetailProps) {
 
         {/* Thumbnails */}
         {product.images.length > 1 && (
-          <div className="flex gap-3 overflow-x-auto pb-2">
+          <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-2">
             {product.images.map((image, index) => (
               <button
                 key={index}
                 onClick={() => setSelectedImage(index)}
-                className={`relative flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${
+                className={`relative flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden border-2 transition-all ${
                   selectedImage === index
                     ? 'border-primary'
                     : 'border-border hover:border-text-secondary'
@@ -100,29 +100,29 @@ export default function ProductDetail({ product }: ProductDetailProps) {
       {/* Product Info */}
       <div className="flex flex-col">
         {/* Badges */}
-        <div className="flex gap-2 mb-4">
+        <div className="flex gap-2 mb-3 sm:mb-4">
           <Badge variant="primary">{product.collection}</Badge>
           {product.is_drop && <Badge variant="error">Limited Drop</Badge>}
         </div>
 
         {/* Title & Price */}
-        <h1 className="text-3xl lg:text-4xl font-bold text-text-primary mb-4">
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-text-primary mb-3 sm:mb-4">
           {product.title}
         </h1>
 
-        <div className="flex items-center gap-4 mb-6">
-          <span className="text-3xl font-bold text-primary">
+        <div className="flex items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
+          <span className="text-2xl sm:text-3xl font-bold text-primary">
             {formatPrice(product.price)}
           </span>
           <StockBadge stock={product.stock} />
         </div>
 
         {/* Description */}
-        <div className="mb-6">
-          <h2 className="text-lg font-semibold text-text-primary mb-2">
+        <div className="mb-4 sm:mb-6">
+          <h2 className="text-base sm:text-lg font-semibold text-text-primary mb-2">
             Description
           </h2>
-          <p className="text-text-secondary leading-relaxed">
+          <p className="text-sm sm:text-base text-text-secondary leading-relaxed">
             {product.description}
           </p>
         </div>
@@ -138,25 +138,25 @@ export default function ProductDetail({ product }: ProductDetailProps) {
         </div>
 
         {/* Quantity Selector */}
-        <div className="mb-6">
-          <label className="block text-sm font-medium text-text-primary mb-3">
+        <div className="mb-4 sm:mb-6">
+          <label className="block text-sm font-medium text-text-primary mb-2 sm:mb-3">
             Quantity
           </label>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3 sm:gap-4">
             <button
               onClick={decrementQuantity}
               disabled={quantity === 1 || isOutOfStock}
-              className="w-10 h-10 rounded-lg bg-background-surface border border-border text-text-primary hover:bg-background-hover disabled:opacity-50 disabled:cursor-not-allowed font-bold text-lg"
+              className="w-11 h-11 sm:w-10 sm:h-10 rounded-lg bg-background-surface border border-border text-text-primary hover:bg-background-hover disabled:opacity-50 disabled:cursor-not-allowed font-bold text-lg touch-manipulation"
             >
               −
             </button>
-            <span className="text-xl font-semibold text-text-primary w-12 text-center">
+            <span className="text-lg sm:text-xl font-semibold text-text-primary w-12 text-center">
               {quantity}
             </span>
             <button
               onClick={incrementQuantity}
               disabled={quantity === maxQuantity || isOutOfStock}
-              className="w-10 h-10 rounded-lg bg-background-surface border border-border text-text-primary hover:bg-background-hover disabled:opacity-50 disabled:cursor-not-allowed font-bold text-lg"
+              className="w-11 h-11 sm:w-10 sm:h-10 rounded-lg bg-background-surface border border-border text-text-primary hover:bg-background-hover disabled:opacity-50 disabled:cursor-not-allowed font-bold text-lg touch-manipulation"
             >
               +
             </button>
@@ -169,12 +169,13 @@ export default function ProductDetail({ product }: ProductDetailProps) {
           disabled={isOutOfStock}
           size="lg"
           fullWidth
+          className="mb-6 sm:mb-0"
         >
           {isOutOfStock ? 'Sold Out' : 'Add to Cart'}
         </Button>
 
         {/* Product Details */}
-        <div className="mt-8 pt-8 border-t border-border space-y-4">
+        <div className="mt-6 sm:mt-8 pt-6 sm:pt-8 border-t border-border space-y-3 sm:space-y-4">
           <div className="flex items-start gap-3">
             <svg
               className="w-5 h-5 text-primary flex-shrink-0 mt-0.5"
@@ -188,8 +189,8 @@ export default function ProductDetail({ product }: ProductDetailProps) {
               />
             </svg>
             <div>
-              <p className="font-semibold text-text-primary">Premium Fabric</p>
-              <p className="text-sm text-text-secondary">
+              <p className="text-sm sm:text-base font-semibold text-text-primary">Premium Fabric</p>
+              <p className="text-xs sm:text-sm text-text-secondary">
                 High-quality cotton blend for maximum comfort
               </p>
             </div>
