@@ -4,14 +4,18 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { getLatestCommunityPosts } from '@/lib/appwrite/community';
 import { getUpcomingDrops } from '@/lib/appwrite/drops';
+import { getFeaturedProducts } from '@/lib/appwrite/products';
 import { CommunityPost, Drop } from '@/types/drop';
+import { Product } from '@/types/product';
 import Button from '@/components/ui/Button';
 import DropCard from '@/components/drops/DropCard';
 import CommunityCard from '@/components/community/CommunityCard';
+import ProductCard from '@/components/product/ProductCard';
 
 export default function HomePage() {
   const [upcomingDrop, setUpcomingDrop] = useState<Drop | null>(null);
   const [communityPosts, setCommunityPosts] = useState<CommunityPost[]>([]);
+  const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
 
   useEffect(() => {
     fetchData();
@@ -19,15 +23,17 @@ export default function HomePage() {
 
   async function fetchData() {
     try {
-      const [drops, posts] = await Promise.all([
+      const [drops, posts, products] = await Promise.all([
         getUpcomingDrops(),
         getLatestCommunityPosts(3),
+        getFeaturedProducts(),
       ]);
 
       if (drops.length > 0) {
         setUpcomingDrop(drops[0]);
       }
       setCommunityPosts(posts);
+      setFeaturedProducts(products);
     } catch (error) {
       console.error('Error fetching homepage data:', error);
     }
@@ -62,6 +68,32 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* Featured Products Section */}
+      {featuredProducts.length > 0 && (
+        <section className="py-16">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-10">
+              <h2 className="text-3xl lg:text-4xl font-bold text-text-primary mb-2">
+                ⭐ Featured Products
+              </h2>
+              <p className="text-text-secondary">
+                Handpicked favorites from our collection
+              </p>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {featuredProducts.map((product) => (
+                <ProductCard key={product.$id} product={product} />
+              ))}
+            </div>
+            <div className="text-center mt-8">
+              <Link href="/shop">
+                <Button variant="secondary">View All Products</Button>
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Next Drop Section */}
       {upcomingDrop && (

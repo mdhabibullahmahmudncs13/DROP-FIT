@@ -11,6 +11,7 @@ export interface Product {
   stock: number;
   is_drop: boolean;
   drop_id?: string;
+  featured: boolean;
 }
 
 export interface ProductFilters {

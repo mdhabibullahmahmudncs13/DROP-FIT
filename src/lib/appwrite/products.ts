@@ -12,6 +12,7 @@ export interface CreateProductData {
   stock: number;
   is_drop?: boolean;
   drop_id?: string;
+  featured?: boolean;
 }
 
 export async function createProduct(data: CreateProductData): Promise<Product> {
@@ -50,6 +51,7 @@ export async function createProduct(data: CreateProductData): Promise<Product> {
         stock: data.stock,
         is_drop: data.is_drop || false,
         drop_id: data.drop_id || null,
+        featured: data.featured || false,
       }
     );
 
@@ -210,6 +212,26 @@ export async function updateProductStock(productId: string, newStock: number): P
     );
   } catch (error) {
     console.error('Error updating product stock:', error);
+    throw error;
+  }
+}
+
+export async function getFeaturedProducts(): Promise<Product[]> {
+  try {
+    const response = await databases.listDocuments(
+      DATABASE_ID,
+      PRODUCTS_COLLECTION_ID,
+      [
+        Query.equal('featured', true),
+        Query.limit(6),
+      ]
+    );
+    return response.documents.map((doc: any) => ({
+      ...doc,
+      images: doc.images ? JSON.parse(doc.images) : [],
+    })) as Product[];
+  } catch (error) {
+    console.error('Error fetching featured products:', error);
     throw error;
   }
 }

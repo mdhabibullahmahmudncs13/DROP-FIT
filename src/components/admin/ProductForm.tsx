@@ -22,6 +22,7 @@ export interface ProductFormData {
   stock: number;
   is_drop: boolean;
   drop_id?: string;
+  featured: boolean;
 }
 
 export default function ProductForm({ product, onSubmit, onCancel }: ProductFormProps) {
@@ -37,6 +38,7 @@ export default function ProductForm({ product, onSubmit, onCancel }: ProductForm
     stock: product?.stock || 0,
     is_drop: product?.is_drop || false,
     drop_id: product?.drop_id || '',
+    featured: product?.featured || false,
   });
   const [imageInput, setImageInput] = useState('');
   const [sizeInput, setSizeInput] = useState('');
@@ -382,6 +384,20 @@ export default function ProductForm({ product, onSubmit, onCancel }: ProductForm
         />
         <label htmlFor="is_drop" className="text-sm font-medium text-text-primary">
           This is a drop product
+        </label>
+      </div>
+
+      {/* Featured Product */}
+      <div className="flex items-center gap-2">
+        <input
+          type="checkbox"
+          id="featured"
+          checked={formData.featured}
+          onChange={(e) => setFormData({ ...formData, featured: e.target.checked })}
+          className="w-4 h-4 accent-primary"
+        />
+        <label htmlFor="featured" className="text-sm font-medium text-text-primary">
+          ⭐ Feature this product on the homepage
         </label>
       </div>
 
