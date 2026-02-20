@@ -50,6 +50,7 @@ export default function UploadPost({ onSuccess }: UploadPostProps) {
       formData.append('file', file);
       formData.append('caption', caption);
       formData.append('userName', user.name);
+      formData.append('userId', user.$id);
 
       const response = await fetch('/api/community', {
         method: 'POST',

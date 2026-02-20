@@ -1,21 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getCurrentUser } from '@/lib/appwrite/auth';
 import { createCommunityPost } from '@/lib/appwrite/community';
 import { uploadToCloudinary } from '@/lib/cloudinary';
 
 export async function POST(request: NextRequest) {
   try {
-    // Authenticate user
-    const user = await getCurrentUser();
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
     // Parse form data
     const formData = await request.formData();
     const file = formData.get('file') as File;
     const caption = formData.get('caption') as string;
     const userName = formData.get('userName') as string;
+    const userId = formData.get('userId') as string;
+
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
 
     if (!file) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 });
@@ -26,7 +24,7 @@ export async function POST(request: NextRequest) {
 
     // Create community post
     const post = await createCommunityPost(
-      userName || user.name,
+      userName || 'Anonymous',
       imageUrl,
       caption
     );

@@ -70,12 +70,30 @@ export default function TrackOrderPage() {
   }
 
   const items: OrderItem[] = JSON.parse(order.items);
-  const shippingInfo = {
-    name: order.shipping_name,
-    phone: order.shipping_phone,
-    address: order.shipping_address,
-    city: order.shipping_city,
-  };
+  
+  // Parse shipping info (support both old and new format)
+  let shippingInfo;
+  if (order.shipping_info) {
+    try {
+      shippingInfo = JSON.parse(order.shipping_info);
+    } catch {
+      shippingInfo = {
+        name: 'Unknown',
+        phone: 'N/A',
+        address: 'N/A',
+        city: 'N/A',
+      };
+    }
+  } else {
+    // Fallback to old format (cast to any for legacy fields)
+    const legacyOrder = order as any;
+    shippingInfo = {
+      name: legacyOrder.shipping_name || 'Unknown',
+      phone: legacyOrder.shipping_phone || 'N/A',
+      address: legacyOrder.shipping_address || 'N/A',
+      city: legacyOrder.shipping_city || 'N/A',
+    };
+  }
 
   const getStatusVariant = (status: string) => {
     switch (status) {

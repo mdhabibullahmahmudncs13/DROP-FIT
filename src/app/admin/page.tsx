@@ -287,11 +287,25 @@ export default function AdminDashboard() {
             {stats.recentOrders.length === 0 ? (
               <p className="text-text-secondary text-center py-4">No orders yet</p>
             ) : (
-              stats.recentOrders.map((order: any) => (
+              stats.recentOrders.map((order: any) => {
+                // Parse shipping name from shipping_info if available
+                let customerName = 'Unknown Customer';
+                if (order.shipping_info) {
+                  try {
+                    const shippingData = JSON.parse(order.shipping_info);
+                    customerName = shippingData.name || 'Unknown Customer';
+                  } catch {
+                    customerName = order.shipping_name || 'Unknown Customer';
+                  }
+                } else if (order.shipping_name) {
+                  customerName = order.shipping_name;
+                }
+                
+                return (
                 <div key={order.$id} className="flex items-center justify-between p-3 bg-background-hover rounded-lg hover:bg-background-card transition-colors">
                   <div className="flex-1 min-w-0">
                     <div className="font-medium text-text-primary text-sm">Order #{order.$id.slice(-8)}</div>
-                    <div className="text-xs text-text-muted mt-1 truncate">{order.shipping_name || 'Unknown Customer'}</div>
+                    <div className="text-xs text-text-muted mt-1 truncate">{customerName}</div>
                   </div>
                   <div className="text-right ml-4 flex-shrink-0">
                     <div className="font-bold text-primary text-sm">{formatPrice(order.total_amount)}</div>
@@ -309,7 +323,8 @@ export default function AdminDashboard() {
                     </Badge>
                   </div>
                 </div>
-              ))
+                );
+              })
             )}
           </div>
         </div>

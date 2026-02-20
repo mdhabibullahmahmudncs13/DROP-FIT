@@ -69,6 +69,8 @@ export default function CheckoutPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          user_id: user.$id,
+          user_email: user.email,
           items: items.map((item) => ({
             product_id: item.product_id,
             title: item.title,

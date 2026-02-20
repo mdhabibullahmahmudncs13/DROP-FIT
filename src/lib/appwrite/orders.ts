@@ -16,12 +16,14 @@ export async function createOrder(data: CreateOrderData): Promise<Order> {
       items: JSON.stringify(data.items),
       total_amount: data.total_amount,
       status: 'pending',
-      shipping_name: data.shipping.name,
-      shipping_phone: data.shipping.phone,
-      shipping_address: data.shipping.address,
-      shipping_city: data.shipping.city,
+      shipping_info: JSON.stringify({
+        name: data.shipping.name,
+        phone: data.shipping.phone,
+        address: data.shipping.address,
+        city: data.shipping.city,
+        notes: data.shipping.notes || '',
+      }),
       payment_method: 'COD',
-      notes: data.shipping.notes || '',
       created_at: new Date().toISOString(),
     };
 

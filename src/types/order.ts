@@ -14,12 +14,8 @@ export interface Order {
   items: string; // JSON string of OrderItem[]
   total_amount: number;
   status: OrderStatus;
-  shipping_name: string;
-  shipping_phone: string;
-  shipping_address: string;
-  shipping_city: string;
+  shipping_info: string; // JSON string of ShippingInfo
   payment_method: string;
-  notes?: string;
   created_at: string;
 }
 
