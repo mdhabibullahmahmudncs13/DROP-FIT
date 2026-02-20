@@ -159,7 +159,7 @@ export default function ProductForm({ product, onSubmit, onCancel }: ProductForm
           value={formData.description}
           onChange={(e) => setFormData({ ...formData, description: e.target.value })}
           placeholder="Enter product description"
-          className="w-full px-4 py-3 bg-background-card border border-border rounded-lg focus:outline-none focus:border-primary text-text-primary resize-vertical"
+          className="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-border rounded-lg focus:outline-none focus:border-primary text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 resize-vertical"
           rows={4}
           required
           maxLength={1000}
@@ -227,7 +227,7 @@ export default function ProductForm({ product, onSubmit, onCancel }: ProductForm
         <select
           value={formData.collection}
           onChange={(e) => setFormData({ ...formData, collection: e.target.value as Collection })}
-          className="w-full px-4 py-3 bg-background-card border border-border rounded-lg focus:outline-none focus:border-primary text-text-primary"
+          className="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-border rounded-lg focus:outline-none focus:border-primary text-gray-900 dark:text-white"
           required
         >
           <option value="anime">Anime</option>
