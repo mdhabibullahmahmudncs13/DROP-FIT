@@ -1,15 +1,32 @@
 import { v2 as cloudinary } from 'cloudinary';
 
-cloudinary.config({
-  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
+// Check if Cloudinary is configured
+const isConfigured = 
+  process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME && 
+  process.env.CLOUDINARY_API_KEY && 
+  process.env.CLOUDINARY_API_SECRET &&
+  process.env.CLOUDINARY_API_KEY !== 'your_api_key' &&
+  process.env.CLOUDINARY_API_SECRET !== 'your_api_secret';
+
+if (isConfigured) {
+  cloudinary.config({
+    cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+  });
+}
 
 export async function uploadToCloudinary(
   file: File | Buffer,
   folder: string = 'dropfit'
 ): Promise<string> {
+  // Check if Cloudinary is configured
+  if (!isConfigured) {
+    throw new Error(
+      'Cloudinary is not configured. Please add CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET, and NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME to your .env.local file. See CLOUDINARY_SETUP.md for details.'
+    );
+  }
+
   try {
     let uploadData: string;
 

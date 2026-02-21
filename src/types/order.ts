@@ -16,6 +16,7 @@ export interface Order {
   status: OrderStatus;
   shipping_info: string; // JSON string of ShippingInfo
   payment_method: string;
+  drop_id: string | null; // ID of drop campaign if order is from a drop
   created_at: string;
 }
 

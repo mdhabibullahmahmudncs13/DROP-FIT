@@ -24,6 +24,7 @@ export async function createOrder(data: CreateOrderData): Promise<Order> {
         notes: data.shipping.notes || '',
       }),
       payment_method: 'COD',
+      drop_id: '',
       created_at: new Date().toISOString(),
     };
 

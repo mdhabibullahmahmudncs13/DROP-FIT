@@ -32,8 +32,18 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ post }, { status: 201 });
   } catch (error) {
     console.error('Error creating community post:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Internal server error';
+    
+    // Check if it's a Cloudinary configuration error
+    if (errorMessage.includes('Cloudinary is not configured')) {
+      return NextResponse.json(
+        { error: 'Image upload service not configured. Please contact administrator.' },
+        { status: 503 }
+      );
+    }
+    
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Failed to create post' },
       { status: 500 }
     );
   }

@@ -106,6 +106,7 @@ export async function POST(request: NextRequest) {
           notes: shipping.notes || '',
         }),
         payment_method: 'COD',
+        drop_id: '',
         created_at: new Date().toISOString(),
       };
 
